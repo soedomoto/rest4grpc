@@ -17,6 +17,7 @@ public class GrpcWebTextHttpMessageConverter extends ByteArrayHttpMessageConvert
     public byte[] readInternal(Class<? extends byte[]> clazz, HttpInputMessage inputMessage) throws IOException {
         byte[] encoded = super.readInternal(clazz, inputMessage);
         byte[] decoded = Base64Utils.decode(encoded);
+        ByteArrayOutputStream bObj = new ByteArrayOutputStream();
 
         // get length of data
         int length = 0;
@@ -25,15 +26,12 @@ public class GrpcWebTextHttpMessageConverter extends ByteArrayHttpMessageConvert
             if (decoded[i] != (byte) 0) {
                 length = decoded[i];
 
-                ByteArrayOutputStream bObj = new ByteArrayOutputStream();
                 for (int j = i + 1; j < i + 1 + length; j++) {
                     bObj.write(decoded[j]);
                 }
-                byte[] data = bObj.toByteArray();
-                return data;
             }
         }
 
-        return null;
+        return bObj.toByteArray();
     }
 }
